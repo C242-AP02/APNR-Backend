@@ -1,0 +1,5 @@
+node_modules
+credentials.json
+.env
+deploy.bat
+deploy(dev).bat
