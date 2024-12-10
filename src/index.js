@@ -3,11 +3,10 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer, { memoryStorage } from 'multer';
 import { handleLogin, handleLogout, authenticateUser } from "./auth.js";
-import { handleDetect, handleGetDetail, handleGetList } from "./handler.js";
+import { handleDetect, handleGetDetail, handleGetList, handleGetTotalVehicle, handleGetTotalVehicleDaily, handleGetTotalVehicleMonthly, handleGetTotalVehiclePerRegion } from "./handler.js";
 
 const app = express();
 const PORT = 9000;
-const FRONTEND_URL = "https://web-apnr.vercel.app"
 const upload = multer({ storage: memoryStorage() }); 
 
 app.use(cors({ origin: true, credentials: true }));
@@ -24,6 +23,11 @@ app.post("/logout", handleLogout);
 app.post("/detect", authenticateUser, upload.single("image"), handleDetect);
 app.get("/get-list/", authenticateUser , handleGetList);
 app.get("/get-vehicle-details/:plateDataId", authenticateUser, handleGetDetail);
+
+app.get("/get-total-vehicle", authenticateUser, handleGetTotalVehicle);
+app.get("/get-total-vehicle-per-region", authenticateUser, handleGetTotalVehiclePerRegion);
+app.get("/get-total-vehicle-daily", authenticateUser, handleGetTotalVehicleDaily);
+app.get("/get-total-vehicle-monthly", authenticateUser, handleGetTotalVehicleMonthly);
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Backend running on http://0.0.0.0:${PORT}`);

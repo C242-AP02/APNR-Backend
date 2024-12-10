@@ -1,6 +1,7 @@
 import admin from "firebase-admin";
 import serviceAccount from "../credentials.json" assert { type: "json" };
 import { createNewUser } from "./firestore.js";
+import { ML_URL } from "./ml.js";
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -10,6 +11,8 @@ const db = admin.firestore();
 
 async function handleLogin (req, res) {
   const { idToken } = req.body;
+
+  fetch(`${ML_URL}`, { method: 'GET' }).catch(() => {});
 
   try {
     const decodedToken = await admin.auth().verifyIdToken(idToken);

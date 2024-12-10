@@ -17,7 +17,7 @@ export async function createNewUser(uid, email, name) {
 }
 
 export async function saveToFirestore (uid, plateNumber, region, imageUrl, timestamp) {
-  const plateDataId = nanoid(5);
+  const plateDataId = nanoid(12);
 
   try {
     await db.collection('plateData').doc(plateDataId).set({
@@ -98,3 +98,141 @@ export async function getVehicleById(plateDataId) {
     throw new Error(error.message);
   }
 };
+
+export async function getTotalVehicle(uid) {
+  try {
+    const querySnapshot = await db.collection("plateData")
+      .where("owner", "==", uid)
+      .get();
+
+    return { total: querySnapshot.size};
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function getTotalVehiclePerRegion(uid) {
+  try {
+    const querySnapshot = await db.collection("plateData")
+      .where("owner", "==", uid)
+      .get();
+
+    const totalPerRegion = {};
+
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      const region = data.region;
+
+      if (region) {
+        totalPerRegion[region] = (totalPerRegion[region] || 0) + 1;
+      }
+    });
+
+    const topRegions = Object.entries(totalPerRegion)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    return Object.fromEntries(topRegions); 
+  } catch (error) {
+    console.error("Error fetching total vehicles per region:", error);
+    throw new Error(error.message);
+  }
+}
+
+export async function getTotalVehicleDaily(uid) {
+  try {
+    const now = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(now.getDate() - 7);
+
+    const querySnapshot = await db.collection("plateData")
+      .where("owner", "==", uid)
+      .where("timestamp", ">=", sevenDaysAgo.getTime())
+      .get();
+
+    const dailyCounts = {
+      "Sunday": 0,
+      "Monday": 0,
+      "Tuesday": 0,
+      "Wednesday": 0,
+      "Thursday": 0,
+      "Friday": 0,
+      "Saturdat": 0
+    };
+
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      const timestamp = data.timestamp;
+
+      if (timestamp) {
+        const date = new Date(timestamp);
+        const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+        dailyCounts[dayName] = (dailyCounts[dayName] || 0) + 1;
+      }
+    });
+
+    const daysOrder = [];
+    for (let i = 0; i < 7; i++) {
+      const day = new Date();
+      day.setDate(now.getDate() - (6 - i));
+      daysOrder.push(day.toLocaleDateString("en-US", { weekday: "long" }));
+    }
+
+    const result = daysOrder.reduce((acc, day) => {
+      acc[day] = dailyCounts[day] || 0;
+      return acc;
+    }, {});
+
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function getTotalVehicleMonthly(uid) {
+  try {
+    const now = new Date();
+    const fiveMonthsAgo = new Date();
+    fiveMonthsAgo.setMonth(now.getMonth() - 4);
+
+    const querySnapshot = await db.collection("plateData")
+      .where("owner", "==", uid)
+      .where("timestamp", ">=", fiveMonthsAgo.getTime()) 
+      .get();
+
+    const monthlyCounts = {};
+
+    querySnapshot.forEach(doc => {
+      const data = doc.data();
+      const timestamp = data.timestamp;
+
+      if (timestamp) {
+        const date = new Date(timestamp);
+        const month = date.toLocaleDateString("en-US", {
+          month: "long",
+        });
+
+        monthlyCounts[month] = (monthlyCounts[month] || 0) + 1;
+      }
+    });
+
+    const monthsOrder = [];
+    for (let i = 4; i >= 0; i--) {
+      const date = new Date();
+      date.setMonth(now.getMonth() - i); 
+      const month = date.toLocaleDateString("en-US", {
+        month: "long",
+      });
+      monthsOrder.push(month);
+    }
+
+    const result = monthsOrder.reduce((acc, month) => {
+      acc[month] = monthlyCounts[month] || 0;
+      return acc;
+    }, {});
+
+    return result;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+}

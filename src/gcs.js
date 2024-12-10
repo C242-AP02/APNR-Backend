@@ -1,7 +1,7 @@
 import { Storage } from '@google-cloud/storage';
 import serviceAccount from "../credentials.json" assert { type: "json" };
 
-const BUCKET_NAME = "vehicle-images-apnr"
+const BUCKET_NAME = "vehicle-images-apnr-megalogic"
 
 const storage = new Storage({
   credentials: serviceAccount

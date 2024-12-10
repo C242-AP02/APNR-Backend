@@ -1,9 +1,9 @@
 import axios from 'axios';
 import FormData from 'form-data';
 
-const ML_URL = 'https://apnr-ml-994118876089.asia-southeast2.run.app/predict';
+export const ML_URL = 'https://apnr-ml-580245180821.asia-southeast2.run.app/predict';
 
-export default async function predictImage(image) {
+export async function predictImage(image) {
   try {
     const form = new FormData();
     form.append('file', image, {
@@ -17,19 +17,13 @@ export default async function predictImage(image) {
         },
     });
 
-    const { annotated_image, plates } = response.data;
+    const { plates } = response.data;
 
     if (!plates || plates.length === 0) {
       throw new Error('No plate detected');
     }
 
-    const plate = plates[0];
-
-    return {
-      plateNumber: plate.plate_number,
-      region: plate.region,
-      annotated_image: annotated_image
-    };
+    return plates;
 
   } catch (error) {
 
