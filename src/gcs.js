@@ -8,7 +8,7 @@ const storage = new Storage({
 });
 const bucket = storage.bucket(BUCKET_NAME);
 
-export default async function uploadToGCS(fileBuffer, fileName, contentType) {
+export async function uploadToGCS(fileBuffer, fileName, contentType) {
   try {
     const blob = bucket.file(fileName);
     const blobStream = blob.createWriteStream({
@@ -29,3 +29,18 @@ export default async function uploadToGCS(fileBuffer, fileName, contentType) {
     throw new Error('Failed to upload to GCS');
   }
 };
+
+export async function deleteFromGCS(publicUrl) {
+  try {
+    const fileName = publicUrl.split(`https://storage.googleapis.com/${BUCKET_NAME}/`)[1];
+
+    if (!fileName) {
+      throw new Error("Invalid public URL");
+    }
+    const file = bucket.file(fileName);
+    await file.delete();
+  } catch (error) {
+    console.error('Error deleting from GCS:', error);
+    throw new Error('Failed to delete from GCS');
+  }
+}

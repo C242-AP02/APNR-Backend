@@ -1,6 +1,6 @@
 import imageType from "image-type";
-import { getTotalVehicle, getTotalVehicleDaily, getTotalVehicleMonthly, getTotalVehiclePerRegion, getUserPlateData, getVehicleById, saveToFirestore } from "./firestore.js";
-import uploadToGCS from "./gcs.js";
+import { deleteFromFirestore, getTotalVehicle, getTotalVehicleDaily, getTotalVehicleMonthly, getTotalVehiclePerRegion, getUserPlateData, getVehicleById, saveToFirestore } from "./firestore.js";
+import { uploadToGCS, deleteFromGCS } from "./gcs.js";
 import { predictImage } from "./ml.js";
 import { base64ToBuffer } from "./utils.js";
 
@@ -80,6 +80,26 @@ export async function handleGetDetail(req, res) {
     }
 
     res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+export async function handleDeleteVehicleData(req, res) {
+  try {
+    const { uid } = req.cookies;
+    const { plateDataId } = req.params
+
+    const result = await getVehicleById(plateDataId);
+
+    if (result.owner !== uid) {
+      return res.status(403).json({ error: "You do not have permission to access this resource." });
+    }
+
+    await deleteFromGCS(result.imageUrl);
+    await deleteFromFirestore(uid, plateDataId);
+
+    return res.status(200).json({ message: "Vehicle data deleted successfully." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

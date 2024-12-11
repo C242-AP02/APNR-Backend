@@ -9,10 +9,10 @@ export async function createNewUser(uid, email, name) {
     await userRef.set({
       email: email,
       name: name,
-      plateData: [],
+      plateDataPaths: [],
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
     });
-    console.log(`User ${uid} created successfully.`);
+    console.log(`New User ${uid} added`);
   }
 }
 
@@ -98,6 +98,31 @@ export async function getVehicleById(plateDataId) {
     throw new Error(error.message);
   }
 };
+
+export async function deleteFromFirestore(uid, plateDataId) {
+  try {
+    const plateDataRef = db.collection('plateData').doc(plateDataId);
+    const plateDataDoc = await plateDataRef.get();
+
+    if (!plateDataDoc.exists) {
+      throw new Error('Plate data not found');
+    }
+    await plateDataRef.delete();
+    const plateDataPath = `plateData/${plateDataId}`;
+
+    const userRef = db.collection('users').doc(uid);
+    const userDoc = await userRef.get();
+
+    if (userDoc.exists) {
+      await userRef.update({
+        plateDataPaths: admin.firestore.FieldValue.arrayRemove(plateDataPath),
+      });
+    }
+  } catch (error) {
+    console.error('Error deleting from Firestore:', error);
+    throw new Error('Failed to delete from Firestore');
+  }
+}
 
 export async function getTotalVehicle(uid) {
   try {

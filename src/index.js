@@ -3,7 +3,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer, { memoryStorage } from 'multer';
 import { handleLogin, handleLogout, authenticateUser } from "./auth.js";
-import { handleDetect, handleGetDetail, handleGetList, handleGetTotalVehicle, handleGetTotalVehicleDaily, handleGetTotalVehicleMonthly, handleGetTotalVehiclePerRegion } from "./handler.js";
+import { handleDeleteVehicleData, handleDetect, handleGetDetail, handleGetList, handleGetTotalVehicle, handleGetTotalVehicleDaily, handleGetTotalVehicleMonthly, handleGetTotalVehiclePerRegion } from "./handler.js";
 
 const app = express();
 const PORT = 9000;
@@ -23,6 +23,7 @@ app.post("/logout", handleLogout);
 app.post("/detect", authenticateUser, upload.single("image"), handleDetect);
 app.get("/get-list/", authenticateUser , handleGetList);
 app.get("/get-vehicle-details/:plateDataId", authenticateUser, handleGetDetail);
+app.delete("/delete-vehicle/:plateDataId", authenticateUser, handleDeleteVehicleData);
 
 app.get("/get-total-vehicle", authenticateUser, handleGetTotalVehicle);
 app.get("/get-total-vehicle-per-region", authenticateUser, handleGetTotalVehiclePerRegion);
