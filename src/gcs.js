@@ -1,10 +1,14 @@
 import { Storage } from '@google-cloud/storage';
-import serviceAccount from "../credentials.json" assert { type: "json" };
+import { config } from 'dotenv';
+config();
 
 const BUCKET_NAME = "vehicle-images-apnr-megalogic"
+const credentials = JSON.parse(
+  Buffer.from(process.env.GCP_CREDENTIALS, 'base64').toString('utf8')
+);
 
 const storage = new Storage({
-  credentials: serviceAccount
+  credentials
 });
 const bucket = storage.bucket(BUCKET_NAME);
 

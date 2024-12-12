@@ -44,7 +44,7 @@ export async function handleDetect (req, res) {
     return res.status(200).json({ message: 'Success', redirect: `?items=${platesDataID.join(",")}` });
   } catch (error) {
     console.error('Error:', error);
-    return res.status(500).json({ message: 'Failed' });
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
 

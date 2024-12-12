@@ -75,7 +75,8 @@ export async function getUserPlateData(uid) {
         const data = doc.data();
         const { owner, ...rest } = data;
         return { id: doc.id, ...rest };
-      });
+      })
+      .sort((a, b) => b.timestamp - a.timestamp);
 
     return { data: plateData };
   } catch (error) {
@@ -191,7 +192,7 @@ export async function getTotalVehicleDaily(uid) {
 
       if (timestamp) {
         const date = new Date(timestamp);
-        const dayName = date.toLocaleDateString("en-US", { weekday: "long" });
+        const dayName = date.toLocaleDateString("en-ID", { weekday: "long" });
         dailyCounts[dayName] = (dailyCounts[dayName] || 0) + 1;
       }
     });
@@ -200,7 +201,7 @@ export async function getTotalVehicleDaily(uid) {
     for (let i = 0; i < 7; i++) {
       const day = new Date();
       day.setDate(now.getDate() - (6 - i));
-      daysOrder.push(day.toLocaleDateString("en-US", { weekday: "long" }));
+      daysOrder.push(day.toLocaleDateString("en-ID", { weekday: "long" }));
     }
 
     const result = daysOrder.reduce((acc, day) => {
@@ -233,7 +234,7 @@ export async function getTotalVehicleMonthly(uid) {
 
       if (timestamp) {
         const date = new Date(timestamp);
-        const month = date.toLocaleDateString("en-US", {
+        const month = date.toLocaleDateString("en-ID", {
           month: "long",
         });
 
@@ -245,7 +246,7 @@ export async function getTotalVehicleMonthly(uid) {
     for (let i = 4; i >= 0; i--) {
       const date = new Date();
       date.setMonth(now.getMonth() - i); 
-      const month = date.toLocaleDateString("en-US", {
+      const month = date.toLocaleDateString("en-ID", {
         month: "long",
       });
       monthsOrder.push(month);

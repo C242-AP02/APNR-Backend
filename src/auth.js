@@ -1,10 +1,15 @@
 import admin from "firebase-admin";
-import serviceAccount from "../credentials.json" assert { type: "json" };
 import { createNewUser } from "./firestore.js";
 import { ML_URL } from "./ml.js";
+import { config } from 'dotenv';
+config();
+
+const credentials = JSON.parse(
+  Buffer.from(process.env.GCP_CREDENTIALS, 'base64').toString('utf8')
+);
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert(credentials),
 });
 
 const db = admin.firestore();
