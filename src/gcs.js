@@ -2,7 +2,7 @@ import { Storage } from '@google-cloud/storage';
 import { config } from 'dotenv';
 config();
 
-const BUCKET_NAME = "vehicle-images-apnr-megalogic"
+const BUCKET_NAME = process.env.BUCKET_NAME;
 const credentials = JSON.parse(
   Buffer.from(process.env.GCP_CREDENTIALS, 'base64').toString('utf8')
 );

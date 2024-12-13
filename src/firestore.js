@@ -100,6 +100,21 @@ export async function getVehicleById(plateDataId) {
   }
 };
 
+export async function setVehiclePublic(plateDataId, isPublic) {
+  try {
+    const docRef = db.collection("plateData").doc(plateDataId);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      throw new Error("Vehicle not found");
+    }
+
+    await docRef.update({ isPublic: isPublic });
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 export async function deleteFromFirestore(uid, plateDataId) {
   try {
     const plateDataRef = db.collection('plateData').doc(plateDataId);

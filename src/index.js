@@ -3,7 +3,19 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer, { memoryStorage } from 'multer';
 import { handleLogin, handleLogout, authenticateUser } from "./auth.js";
-import { handleDeleteVehicleData, handleDetect, handleGetDetail, handleGetList, handleGetTotalVehicle, handleGetTotalVehicleDaily, handleGetTotalVehicleMonthly, handleGetTotalVehiclePerRegion } from "./handler.js";
+import { 
+  handleDeleteVehicleData, 
+  handleDetect, 
+  handleGetDetail, 
+  handleGetPublicDetail,
+  handleGetList, 
+  handleGetTotalVehicle, 
+  handleGetTotalVehicleDaily, 
+  handleGetTotalVehicleMonthly, 
+  handleGetTotalVehiclePerRegion, 
+  handleSetPublicDetails,
+  handleSetPrivateDetails
+} from "./handler.js";
 
 const app = express();
 const PORT = 9000;
@@ -23,6 +35,9 @@ app.post("/logout", handleLogout);
 app.post("/detect", authenticateUser, upload.single("image"), handleDetect);
 app.get("/get-list/", authenticateUser , handleGetList);
 app.get("/get-vehicle-details/:plateDataId", authenticateUser, handleGetDetail);
+app.get("/get-public-details/:plateDataId", handleGetPublicDetail);
+app.patch("/set-details-public/:plateDataId", authenticateUser, handleSetPublicDetails);
+app.patch("/set-details-private/:plateDataId", authenticateUser, handleSetPrivateDetails);
 app.delete("/delete-vehicle/:plateDataId", authenticateUser, handleDeleteVehicleData);
 
 app.get("/get-total-vehicle", authenticateUser, handleGetTotalVehicle);

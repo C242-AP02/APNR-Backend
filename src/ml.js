@@ -1,7 +1,9 @@
 import axios from 'axios';
 import FormData from 'form-data';
+import { config } from 'dotenv';
+config();
 
-export const ML_URL = 'https://apnr-ml-580245180821.asia-southeast2.run.app/predict';
+export const ML_URL = process.env.ML_URL;
 
 export async function predictImage(image) {
   try {
