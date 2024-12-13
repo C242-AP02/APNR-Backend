@@ -13,7 +13,7 @@ export async function predictImage(image) {
       contentType: 'image/jpeg',
     });
 
-    const response = await axios.post( ML_URL, form, {
+    const response = await axios.post( `${ML_URL}/predict`, form, {
         headers: {
           ...form.getHeaders(),
         },
